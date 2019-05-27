@@ -1,0 +1,12 @@
+maximum_availability_zones: 5
+
+# public | internal
+loadbalancer_scheme: public
+
+static_ips: false
+
+loadbalancer_attributes:
+  deletion_protection.enabled: false
+  load_balancing.cross_zone.enabled: false
+
+dns_format: ${EnvironmentName}.${DnsDomain}
