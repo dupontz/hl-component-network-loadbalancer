@@ -58,7 +58,7 @@ CloudFormation do
 
   records.each do |record|
     name = ('apex' || '')? dns_format : "#{record}.#{dns_format}."
-    Route53_RecordSet("#{record.gsub('*','Wildcard').gsub('.','Dot')}LoadBalancerRecord") do
+    Route53_RecordSet("#{record.gsub('*','Wildcard').gsub('.','Dot').gsub('-','')}LoadBalancerRecord") do
       HostedZoneName FnSub("#{dns_format}.")
       Name FnSub(name)
       Type 'A'
