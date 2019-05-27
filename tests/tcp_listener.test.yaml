@@ -1,0 +1,33 @@
+test_metadata:
+  type: config
+  name: tcp_listener
+  description: test with a tcp listener and default target group
+
+loadbalancer_scheme: public
+static_ips: true
+
+loadbalancer_tags:
+  Name: aurora-proxy
+
+records:
+  - dbproxy
+
+targetgroups:
+  mysql:
+    protocol: tcp
+    port: 3306
+    type: ip
+    tags:
+      Name: MySQL-TCP
+    healthcheck:
+      HealthCheckPort: "traffic-port"
+      protocol: TCP
+    target_ips:
+      - ip: 10.1.2.16/32
+        port: 3306
+
+listeners:
+  mysql:
+    port: 3306
+    protocol: tcp
+    targetgroup: mysql
