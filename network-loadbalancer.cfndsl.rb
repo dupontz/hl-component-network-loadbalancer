@@ -86,7 +86,7 @@ CloudFormation do
   end if defined? listeners
 
   records.each do |record|
-    name = ('apex' || '')? dns_format : "#{record}.#{dns_format}."
+    name = (['apex',''].include? record) ? dns_format : "#{record}.#{dns_format}."
     Route53_RecordSet("#{record.gsub('*','Wildcard').gsub('.','Dot').gsub('-','')}LoadBalancerRecord") do
       HostedZoneName FnSub("#{dns_format}.")
       Name FnSub(name)
