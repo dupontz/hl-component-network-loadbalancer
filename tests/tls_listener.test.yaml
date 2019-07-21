@@ -3,30 +3,30 @@ test_metadata:
   name: tls_listener
   description: test with a tcp listener and default target group
 
-# loadbalancer_scheme: public
-#
-# loadbalancer_tags:
-#   Name: MyApp
-#
-# records:
-#   - app
-#
-# targetgroups:
-#   app:
-#     protocol: tcp
-#     port: 80
-#     tags:
-#       Name: MyApp
-#     healthcheck:
-#       HealthCheckPort: "traffic-port"
-#       protocol: TCP
-#
-# listeners:
-#   https:
-#     port: 443
-#     protocol: tls
-#     targetgroup: app
-#     certificates:
-#       - MyAppSSLCert
-#       - AlternateSSLCert
-#       - AnotherCert
+loadbalancer_scheme: public
+
+loadbalancer_tags:
+  Name: MyApp
+
+records:
+  - app
+
+targetgroups:
+  app:
+    protocol: tcp
+    port: 80
+    tags:
+      Name: MyApp
+    healthcheck:
+      HealthCheckPort: "traffic-port"
+      protocol: TCP
+
+listeners:
+  https:
+    port: 443
+    protocol: tls
+    targetgroup: app
+    # certificates:
+    #   - MyAppSSLCert
+    #   - AlternateSSLCert
+    #   - AnotherCert

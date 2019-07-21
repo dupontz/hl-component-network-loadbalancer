@@ -6,6 +6,7 @@ CfhighlanderTemplate do
     ComponentParam 'EnvironmentName', 'dev', isGlobal: true
     ComponentParam 'EnvironmentType', 'development', allowedValues: ['development','production'], isGlobal: true
     ComponentParam 'DnsDomain'
+    ComponentParam 'SslCertId', ''
 
     maximum_availability_zones.times do |az|
       if loadbalancer_scheme != 'internal' && static_ips

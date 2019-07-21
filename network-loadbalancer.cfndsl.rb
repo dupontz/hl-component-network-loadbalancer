@@ -25,6 +25,8 @@ CloudFormation do
       LoadBalancerAttributes loadbalancer_attributes.map {|key,value| { Key: key, Value: value } }
     end
   end
+  
+  
 
   targetgroups.each do |tg_name, params|
 
@@ -54,6 +56,12 @@ CloudFormation do
 
       Tags default_tags
     }
+    
+    Output("#{tg_name}TargetGroup") {
+      Value(Ref("#{tg_name}TargetGroup"))
+      Export FnSub("${EnvironmentName}-#{component_name}-#{tg_name}TargetGroup")
+    }
+    
   end if defined? targetgroups
 
   listeners.each do |listener_name, params|
@@ -64,9 +72,7 @@ CloudFormation do
       LoadBalancerArn Ref(:NetworkLoadBalancer)
 
       if params['protocol'].upcase == 'TLS'
-        certificate = params['certificates'].shift()
-        puts  certificate
-        Certificates [{ CertificateArn: FnSub("${#{certificate}}") }]
+        Certificates [{ CertificateArn: Ref('SslCertId') }]
         SslPolicy params['ssl_policy'] if params.has_key?('ssl_policy')
       end
 
@@ -99,4 +105,19 @@ CloudFormation do
 
   end if defined? records
 
+  Output(:LoadBalancer) {
+    Value(Ref(:NetworkLoadBalancer))
+    Export FnSub("${EnvironmentName}-#{component_name}-LoadBalancer")
+  }
+
+  Output(:LoadBalancerDNSName) {
+    Value(FnGetAtt(:NetworkLoadBalancer, :DNSName))
+    Export FnSub("${EnvironmentName}-#{component_name}-DNSName")
+  }
+
+  Output(:LoadBalancerCanonicalHostedZoneID) {
+    Value(FnGetAtt(:NetworkLoadBalancer, :CanonicalHostedZoneID))
+    Export FnSub("${EnvironmentName}-#{component_name}-CanonicalHostedZoneID")
+  }
+  
 end
