@@ -88,6 +88,11 @@ CloudFormation do
         ListenerArn Ref("#{listener_name}Listener")
       }
     end
+    
+    Output("#{listener_name}Listener") {
+      Value(Ref("#{listener_name}Listener"))
+      Export FnSub("${EnvironmentName}-#{component_name}-#{listener_name}Listener")
+    }
 
   end if defined? listeners
 
