@@ -31,7 +31,7 @@ CloudFormation do
   targetgroups.each do |tg_name, params|
 
     ElasticLoadBalancingV2_TargetGroup("#{tg_name}TargetGroup") {
-      VpcId Ref(:VpcId)
+      VpcId Ref(:VPCId)
       Protocol 'TCP'
       Port params['port']
 
