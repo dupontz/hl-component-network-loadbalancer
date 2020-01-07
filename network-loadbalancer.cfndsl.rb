@@ -4,10 +4,15 @@ CloudFormation do
   default_tags << { Key: "Environment", Value: Ref("EnvironmentName") }
   default_tags << { Key: "EnvironmentType", Value: Ref("EnvironmentType") }
 
+  tags = external_parameters.fetch(:tags, [])
   tags.each do |key, value|
     default_tags << { Key: key, Value: value }
   end if defined? tags
 
+  loadbalancer_scheme = external_parameters[:loadbalancer_scheme]
+  static_ips = external_parameters[:static_ips]
+  maximum_availability_zones = external_parameters[:maximum_availability_zones]
+  loadbalancer_attributes = external_parameters[:loadbalancer_attributes]
   private = loadbalancer_scheme == 'internal' ? true : false
 
   ElasticLoadBalancingV2_LoadBalancer(:NetworkLoadBalancer) do
@@ -27,7 +32,7 @@ CloudFormation do
   end
   
   
-
+  targetgroups = external_parameters.fetch(:targetgroups, {})
   targetgroups.each do |tg_name, params|
 
     ElasticLoadBalancingV2_TargetGroup("#{tg_name}TargetGroup") {
@@ -59,11 +64,12 @@ CloudFormation do
     
     Output("#{tg_name}TargetGroup") {
       Value(Ref("#{tg_name}TargetGroup"))
-      Export FnSub("${EnvironmentName}-#{component_name}-#{tg_name}TargetGroup")
+      Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-#{tg_name}TargetGroup")
     }
     
-  end if defined? targetgroups
+  end
 
+  listeners = external_parameters.fetch(:listeners, {})
   listeners.each do |listener_name, params|
 
     ElasticLoadBalancingV2_Listener("#{listener_name}Listener") {
@@ -91,11 +97,14 @@ CloudFormation do
     
     Output("#{listener_name}Listener") {
       Value(Ref("#{listener_name}Listener"))
-      Export FnSub("${EnvironmentName}-#{component_name}-#{listener_name}Listener")
+      Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-#{listener_name}Listener")
     }
 
-  end if defined? listeners
+  end
 
+
+  dns_format = external_parameters[:dns_format]
+  records = external_parameters.fetch(:records, [])
   records.each do |record|
     name = (['apex',''].include? record) ? dns_format : "#{record}.#{dns_format}."
     Route53_RecordSet("#{record.gsub('*','Wildcard').gsub('.','Dot').gsub('-','')}LoadBalancerRecord") do
@@ -108,21 +117,21 @@ CloudFormation do
       })
     end
 
-  end if defined? records
+  end
 
   Output(:LoadBalancer) {
     Value(Ref(:NetworkLoadBalancer))
-    Export FnSub("${EnvironmentName}-#{component_name}-LoadBalancer")
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-LoadBalancer")
   }
 
   Output(:LoadBalancerDNSName) {
     Value(FnGetAtt(:NetworkLoadBalancer, :DNSName))
-    Export FnSub("${EnvironmentName}-#{component_name}-DNSName")
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-DNSName")
   }
 
   Output(:LoadBalancerCanonicalHostedZoneID) {
     Value(FnGetAtt(:NetworkLoadBalancer, :CanonicalHostedZoneID))
-    Export FnSub("${EnvironmentName}-#{component_name}-CanonicalHostedZoneID")
+    Export FnSub("${EnvironmentName}-#{external_parameters[:component_name]}-CanonicalHostedZoneID")
   }
   
 end
