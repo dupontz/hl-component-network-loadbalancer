@@ -15,11 +15,20 @@ CloudFormation do
   loadbalancer_attributes = external_parameters[:loadbalancer_attributes]
   private = loadbalancer_scheme == 'internal' ? true : false
 
+  if !private && static_ips
+    Condition(:StaticIPs, FnNot(FnEquals(Ref(:Nlb0EIPAllocationId), "")))
+  end
+
   ElasticLoadBalancingV2_LoadBalancer(:NetworkLoadBalancer) do
     Type 'network'
 
     if !private && static_ips
-      SubnetMappings maximum_availability_zones.times.collect { |az| { SubnetId: FnSelect(az, Ref('SubnetIds')), AllocationId: Ref("Nlb#{az}EIPAllocationId") } }
+      SubnetMappings(
+        FnIf(:StaticIPs,
+          maximum_availability_zones.times.collect {|az| {SubnetId: FnSelect(az, Ref('SubnetIds')), AllocationId: Ref("Nlb#{az}EIPAllocationId")}},
+          Ref('AWS::NoValue')
+        )
+      )
     else
       Scheme 'internal' if private
       Subnets Ref('SubnetIds')

@@ -10,7 +10,7 @@ CfhighlanderTemplate do
 
     maximum_availability_zones.times do |az|
       if loadbalancer_scheme != 'internal' && static_ips
-        ComponentParam "Nlb#{az}EIPAllocationId", 'dynamic'
+        ComponentParam "Nlb#{az}EIPAllocationId", ""
       end
     end
 
