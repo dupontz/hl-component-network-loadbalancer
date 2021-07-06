@@ -52,7 +52,7 @@ CloudFormation do
       TargetType params['type'] if params.has_key?('type')
 
       if params.has_key?('type') and params['type'] == 'ip' and params.has_key? 'target_ips'
-        Targets (params['target_ips'].map {|ip|  { 'Id' => ip['ip'], 'Port' => ip['port'] }})
+        Targets (params['target_ips'].map {|ip|  { 'Id' => ip['ip'], 'Port' => ip['port'], 'AvailabilityZone' => ip['az']? ip['az'] : nil }.compact})
       end
 
       if params.has_key?('attributes')
