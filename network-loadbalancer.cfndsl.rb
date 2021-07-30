@@ -61,11 +61,13 @@ CloudFormation do
 
       if params.has_key?('healthcheck')
         HealthCheckPort params['healthcheck']['port'] if params['healthcheck'].has_key?('port')
-        HealthCheckProtocol 'TCP'
+        HealthCheckProtocol params['healthcheck'].has_key?('protocol') ? params['healthcheck']['protocol'] : 'TCP'
+        HealthCheckPath params['healthcheck']['path'] if params['healthcheck'].has_key?('path')
         HealthCheckIntervalSeconds params['healthcheck']['interval'] if params['healthcheck'].has_key?('interval')
         HealthCheckTimeoutSeconds params['healthcheck']['timeout'] if params['healthcheck'].has_key?('timeout')
         HealthyThresholdCount params['healthcheck']['heathy_count'] if params['healthcheck'].has_key?('heathy_count')
         UnhealthyThresholdCount params['healthcheck']['unheathy_count'] if params['healthcheck'].has_key?('unheathy_count')
+        Matcher ({ HttpCode: params['healthcheck']['code'] }) if params ['healthcheck'].has_key?('code')
       end
 
       Tags default_tags
