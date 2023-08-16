@@ -18,6 +18,8 @@ CloudFormation do
   if !private && static_ips
     Condition(:StaticIPs, FnNot(FnEquals(Ref(:Nlb0EIPAllocationId), "")))
   end
+  
+  Condition(:AddSecurityGroups, FnNot(FnEquals(FnJoin(',', Ref(:SecurityGroupIds)), '')))
 
   ElasticLoadBalancingV2_LoadBalancer(:NetworkLoadBalancer) do
     Type 'network'
@@ -34,6 +36,10 @@ CloudFormation do
       Subnets Ref('SubnetIds')
     end
 
+    SecurityGroups(
+      FnIf(:AddSecurityGroups, Ref('SecurityGroupIds'), Ref('AWS::NoValue'))
+    )
+    
     Tags default_tags
     unless loadbalancer_attributes.nil?
       LoadBalancerAttributes loadbalancer_attributes.map {|key,value| { Key: key, Value: value } }
