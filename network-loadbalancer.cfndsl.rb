@@ -34,6 +34,9 @@ CloudFormation do
       Subnets Ref('SubnetIds')
     end
 
+    if !Ref('SecurityGroupIds').empty?
+      SecurityGroups Ref('SecurityGroupIds')
+
     Tags default_tags
     unless loadbalancer_attributes.nil?
       LoadBalancerAttributes loadbalancer_attributes.map {|key,value| { Key: key, Value: value } }
