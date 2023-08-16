@@ -15,6 +15,7 @@ CfhighlanderTemplate do
     end
 
     ComponentParam 'SubnetIds', type: 'CommaDelimitedList'
+    ComponentParam 'SecurityGroupIds', type: 'CommaDelimitedList'
     ComponentParam 'VPCId', type: 'AWS::EC2::VPC::Id'
   end
 
