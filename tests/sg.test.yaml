@@ -1,0 +1,12 @@
+test_metadata:
+  type: config
+  name: default
+  description: test with default config
+
+
+security_group_rules:
+  -
+    from: 443
+    ip_blocks:
+      - vpn
+    desc: allow traffic
