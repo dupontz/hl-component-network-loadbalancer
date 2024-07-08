@@ -13,10 +13,22 @@ CloudFormation do
   static_ips = external_parameters[:static_ips]
   maximum_availability_zones = external_parameters[:maximum_availability_zones]
   loadbalancer_attributes = external_parameters[:loadbalancer_attributes]
+  security_group_rules = external_parameters.fetch(:security_group_rules, [])
+  export_name = external_parameters.fetch(:export_name, external_parameters[:component_name])
+  
   private = loadbalancer_scheme == 'internal' ? true : false
 
   if !private && static_ips
     Condition(:StaticIPs, FnNot(FnEquals(Ref(:Nlb0EIPAllocationId), "")))
+  end
+
+  if !security_group_rules.empty?
+    EC2_SecurityGroup(:SecurityGroup) do
+      GroupDescription FnJoin(' ', [Ref(:EnvironmentName), "#{export_name}"])
+      VpcId Ref(:VPCId)
+      SecurityGroupIngress generate_security_group_rules(security_group_rules,ip_blocks) if (!security_group_rules.empty? && !ip_blocks.empty?)
+      Tags default_tags
+    end
   end
   
   Condition(:AddSecurityGroups, FnNot(FnEquals(FnJoin(',', Ref(:SecurityGroupIds)), '')))
@@ -36,9 +48,13 @@ CloudFormation do
       Subnets Ref('SubnetIds')
     end
 
-    SecurityGroups(
-      FnIf(:AddSecurityGroups, Ref('SecurityGroupIds'), Ref('AWS::NoValue'))
-    )
+    if !security_group_rules.empty?
+      SecurityGroups [Ref(:SecurityGroup)]
+    else
+      SecurityGroups(
+        FnIf(:AddSecurityGroups, Ref('SecurityGroupIds'), Ref('AWS::NoValue'))
+      )
+    end
     
     Tags default_tags
     unless loadbalancer_attributes.nil?
