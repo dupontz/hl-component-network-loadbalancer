@@ -2,6 +2,9 @@ CfhighlanderTemplate do
   Name 'network-loadbalancer'
   Description "network-loadbalancer - #{component_version}"
 
+  DependsOn 'lib-ec2'
+  DependsOn 'lib-alb'
+
   Parameters do
     ComponentParam 'EnvironmentName', 'dev', isGlobal: true
     ComponentParam 'EnvironmentType', 'development', allowedValues: ['development','production'], isGlobal: true
