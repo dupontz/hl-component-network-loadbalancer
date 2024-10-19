@@ -78,7 +78,7 @@ CloudFormation do
       end
 
       if params.has_key?('type') and params['type'] == 'instance' and params.has_key? 'target_id'
-        Targets (params['target_ids'].map {|id|  { 'Id' => id['id'], 'Port' => id['port'])
+        Targets (params['target_ids'].map {|id|  { 'Id' => id['id'], 'Port' => id['port'] }.compact})
       end
 
       if params.has_key?('attributes')
