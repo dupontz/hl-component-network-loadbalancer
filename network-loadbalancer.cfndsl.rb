@@ -77,6 +77,10 @@ CloudFormation do
         Targets (params['target_ips'].map {|ip|  { 'Id' => ip['ip'], 'Port' => ip['port'], 'AvailabilityZone' => ip['az']? ip['az'] : nil }.compact})
       end
 
+      if params.has_key?('type') and params['type'] == 'instance' and params.has_key? 'target_id'
+        Targets (params['target_ids'].map {|ip|  { 'Id' => ip['id'], 'Port' => ip['port'], 'AvailabilityZone' => ip['az']? ip['az'] : nil }.compact})
+      end
+
       if params.has_key?('attributes')
         TargetGroupAttributes params['attributes'].map { |key,value| { Key: key, Value: value } }
       end
