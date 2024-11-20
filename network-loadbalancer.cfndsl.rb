@@ -91,8 +91,8 @@ CloudFormation do
         HealthCheckPath params['healthcheck']['path'] if params['healthcheck'].has_key?('path')
         HealthCheckIntervalSeconds params['healthcheck']['interval'] if params['healthcheck'].has_key?('interval')
         HealthCheckTimeoutSeconds params['healthcheck']['timeout'] if params['healthcheck'].has_key?('timeout')
-        HealthyThresholdCount params['healthcheck']['heathy_count'] if params['healthcheck'].has_key?('heathy_count')
-        UnhealthyThresholdCount params['healthcheck']['unheathy_count'] if params['healthcheck'].has_key?('unheathy_count')
+        HealthyThresholdCount params['healthcheck']['healthy_count'] if params['healthcheck'].has_key?('heathy_count')
+        UnhealthyThresholdCount params['healthcheck']['unhealthy_count'] if params['healthcheck'].has_key?('unheathy_count')
         Matcher ({ HttpCode: params['healthcheck']['code'] }) if params ['healthcheck'].has_key?('code')
       end
 
